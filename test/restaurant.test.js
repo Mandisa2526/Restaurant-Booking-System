@@ -120,30 +120,32 @@ describe("The restaurant booking table", function () {
         this.timeout(10000);
         let restaurantTableBooking = restaurant(db);
 
-        let tables = await restaurantTableBooking.getBookedTables({
+        await restaurantTableBooking.bookTable({
             tableName: 'Table three',
             username: 'Kim',
             phoneNumber: '084 009 8910',
             seats: 2
         });
 
-        assert.deepEqual({ "booked": false, "capacity": 4, "table_name": "Table three" }, tables);
+        let tables = await restaurantTableBooking.getBookedTables();
+
+        assert.deepEqual([{ "booked": true, "capacity": 4, "table_name": "Table three"}] , tables);
     });
 
     it("should allow users to book tables", async function () {
         this.timeout(10000);
         let restaurantTableBooking = restaurant(db);
 
-        assert.deepEqual([], await restaurantTableBooking.getBookedTablesForUser('jodie'));
+        assert.deepEqual([], await restaurantTableBooking.getBookedTablesForUser('Jodie'));
 
-        restaurantTableBooking.bookTable({
+        await restaurantTableBooking.bookTable({
             tableName: 'Table five',
             username: 'Jodie',
             phoneNumber: '084 009 8910',
             seats: 4
         });
 
-        restaurantTableBooking.bookTable({
+        await restaurantTableBooking.bookTable({
             tableName: 'Table four',
             username: 'Jodie',
             phoneNumber: '084 009 8910',
@@ -158,7 +160,7 @@ describe("The restaurant booking table", function () {
         })
 
         // should only return 2 bookings as two of the bookings were for the same table
-        assert.deepEqual([{"booked": false, "capacity": 2, "table_name": "Table four"}, {"booked": false, "capacity": 6, "table_name": "Table five"}], await restaurantTableBooking.getBookedTablesForUser('jodie'));
+        assert.deepEqual([{"booked": true, "capacity": 2, "table_name": "Table four"}, {"booked": true, "capacity": 6, "table_name": "Table five"}], await restaurantTableBooking.getBookedTablesForUser('Jodie'));
     });
 
     it("should be able to cancel a table booking", async function () {
@@ -172,7 +174,7 @@ describe("The restaurant booking table", function () {
             seats: 4
         });
 
-        restaurantTableBooking.bookTable({
+        await restaurantTableBooking.bookTable({
             tableName: 'Table four',
             username: 'Kim',
             phoneNumber: '084 009 8910',

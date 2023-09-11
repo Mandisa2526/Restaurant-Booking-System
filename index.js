@@ -38,7 +38,7 @@ app.engine('handlebars', handlebarSetup);
 app.set('view engine', 'handlebars');
 
 app.get("/", (req, res) => {
-
+//Show tables that can be booked and allow client to book a tablle that is not already booked. Hide the radio button for table that are already booked.
     res.render('index', { 
         available: restaurantObject.getTables(),
         //tables : [{}, {}, {booked : true}, {}, {}, {}]

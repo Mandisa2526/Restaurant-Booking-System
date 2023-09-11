@@ -23,13 +23,13 @@ const restaurant = (db) => {
         if (!table.phoneNumber) {
             return 'Please enter a contact number';
         }
-        await db.none(`UPDATE table_booking SET username = '${table.username}', number_of_people = '${table.seats}', booked = true, contact_number = '${table.phoneNumber}'WHERE table_name = '${table.tableName}'`)
+        await db.none(`UPDATE table_booking SET username = '${table.username}', number_of_people = '${table.seats}', booked = true, contact_number = '${table.phoneNumber}' WHERE table_name = '${table.tableName}'`)
         //if it is greater than the available seats return a message
     }
 
     async function getBookedTables() {
         // get all the booked tables
-        let bookedTables = await db.any('SELECT * FROM table_booking WHERE booked = false');
+        let bookedTables = await db.any('SELECT table_name, capacity, booked FROM table_booking WHERE booked = true');
         return bookedTables;
     }
 
@@ -43,13 +43,13 @@ const restaurant = (db) => {
 
     async function cancelTableBooking(tableName) {
         // cancel a table by name
-        db.one(`DELETE  FROM table_booking WHERE table_name = '${tableName}'`);
+        await db.none(`UPDATE table_booking SET username = null, number_of_people = null, booked = false, contact_number = null WHERE table_name = '${tableName}'`);
     }
 
     async function getBookedTablesForUser(username) {
         // get user table booking
-        let bookedByUserName = await db.oneOrNone(`SELECT * FROM table_booking WHERE username = '${username}'`);
-        return bookedByUserName.booked;
+        let bookedByUserName = await db.any(`SELECT table_name, capacity, booked FROM table_booking WHERE username = '${username}'`);
+        return bookedByUserName;
     }
 
     return {
