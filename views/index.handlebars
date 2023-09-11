@@ -18,12 +18,11 @@
 
     <div class="columns">
 
-        {{#each tables}}
-
+        {{#each available}}
         <div class="column">
             <div class="panel">
                 <p class="panel-heading">
-                    Table XYZ
+                    {{table_name}}
                 </p>
                 <div class="panel-block">
                     <div class="field is-horizontal">
@@ -37,7 +36,7 @@
                     <div class="field is-horizontal">
                         <div class="field-label is-normal">
 
-                            <label class="label">Table capacity</label>
+                            <label class="label">{{capacity}}</label>
                         </div>
                         <div class="field-body">
                             <div class="field">
@@ -55,7 +54,7 @@
                         <img src="./images/reserved.png" width="60">
                         {{else}}
                         <label class="radio">
-                            <input type="radio" name="tableId" id="tableId">
+                            <input type="radio" name="tableId" id="tableId" value="{{table_name}}">
                             Book this table
                         </label>
                         {{/if}}

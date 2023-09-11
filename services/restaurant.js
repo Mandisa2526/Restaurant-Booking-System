@@ -29,7 +29,7 @@ const restaurant = (db) => {
 
     async function getBookedTables() {
         // get all the booked tables
-        let bookedTables = await db.any('SELECT table_name, capacity, booked FROM table_booking WHERE booked = true');
+        let bookedTables = await db.any('SELECT * FROM table_booking WHERE booked = true');
         return bookedTables;
     }
 

@@ -16,7 +16,7 @@ app.use(flash());
 
 // Create Database Connection
 const pgp = pgPromise();
-const connectionString = "postgres://restuarant_bookings_user:XES7yGRAmOWAaLxSXk9FOME5sbi15cVL@dpg-cjvc2p95mpss73fbtdr0-a.oregon-postgres.render.com/restuarant_bookings";
+const connectionString = "postgres://restuarant_bookings_user:XES7yGRAmOWAaLxSXk9FOME5sbi15cVL@dpg-cjvc2p95mpss73fbtdr0-a.oregon-postgres.render.com/restuarant_bookings?ssl=true";
 const db = pgp(connectionString);
 
 let restaurantObject = restaurant(db);
@@ -37,22 +37,28 @@ app.use(express.static('public'));
 app.engine('handlebars', handlebarSetup);
 app.set('view engine', 'handlebars');
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
 //Show tables that can be booked and allow client to book a tablle that is not already booked. Hide the radio button for table that are already booked.
+    const availableTables = await restaurantObject.getTables();
     res.render('index', { 
-        available: restaurantObject.getTables(),
-        //tables : [{}, {}, {booked : true}, {}, {}, {}]
+        available: availableTables,
     })
 });
-app.post('/book',(req,res)=>{
-    
+app.post('/book', async (req,res)=>{
+    await restaurantObject.bookTable({
+        tableName: req.body.tableId,
+        username: req.body.username,
+        phoneNumber: req.body.phone_number,
+        seats: req.body.booking_size,
+    });
     res.redirect('/')
 }
 );
 
 
-app.get("/bookings", (req, res) => {
-    res.render('bookings', { tables : [{}, {}, {}, {}, {}, {}]})
+app.get("/bookings", async (req, res) => {
+    const bookedTables = await restaurantObject.getBookedTables();
+    res.render('bookings', { tables : bookedTables})
 });
 
 

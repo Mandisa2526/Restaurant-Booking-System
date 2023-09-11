@@ -129,7 +129,15 @@ describe("The restaurant booking table", function () {
 
         let tables = await restaurantTableBooking.getBookedTables();
 
-        assert.deepEqual([{ "booked": true, "capacity": 4, "table_name": "Table three"}] , tables);
+        assert.deepEqual([         {
+            "booked": true,
+            "capacity": 4,
+            "contact_number": "084 009 8910",
+            "id": 3,
+            "number_of_people": 2,
+            "table_name": "Table three",
+            "username": "Kim",
+        }] , tables);
     });
 
     it("should allow users to book tables", async function () {
