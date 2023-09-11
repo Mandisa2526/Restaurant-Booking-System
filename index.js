@@ -1,16 +1,30 @@
 import express from "express";
-import pgp from "pg-promise";
+import pgPromise from "pg-promise";
 import exphbs from "express-handlebars";
 import bodyParser from "body-parser";
 import flash from "flash-express";
+import restaurant from './services/restaurant.js';
 
-const app = express()
+
+
+
+const app = express();
 
 app.use(express.static('public'));
 app.use(flash());
 
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+
+// Create Database Connection
+const pgp = pgPromise();
+const connectionString = "postgres://restuarant_bookings_user:XES7yGRAmOWAaLxSXk9FOME5sbi15cVL@dpg-cjvc2p95mpss73fbtdr0-a.oregon-postgres.render.com/restuarant_bookings";
+const db = pgp(connectionString);
+
+let restaurantObject = restaurant(db);
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+// parse application/json
+app.use(bodyParser.json());
 
 const handlebarSetup = exphbs.engine({
     partialsDir: "./views/partials",
@@ -18,13 +32,23 @@ const handlebarSetup = exphbs.engine({
     layoutsDir: './views/layouts'
 });
 
+app.use(express.static('public'));
+
 app.engine('handlebars', handlebarSetup);
 app.set('view engine', 'handlebars');
 
 app.get("/", (req, res) => {
 
-    res.render('index', { tables : [{}, {}, {booked : true}, {}, {}, {}]})
+    res.render('index', { 
+        available: restaurantObject.getTables(),
+        //tables : [{}, {}, {booked : true}, {}, {}, {}]
+    })
 });
+app.post('/book',(req,res)=>{
+    
+    res.redirect('/')
+}
+);
 
 
 app.get("/bookings", (req, res) => {
@@ -36,5 +60,5 @@ var portNumber = process.env.PORT || 3000;
 
 //start everything up
 app.listen(portNumber, function () {
-    console.log('🚀  server listening on:', portNumber);
+    console.log('App starting on port', portNumber);
 });
